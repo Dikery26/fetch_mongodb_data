@@ -10,6 +10,10 @@ const mongoUrl = process.env.MONGODB_URL;
 const dbName = process.env.MONGODB_DATABASE;
 let db;
 
+app.use(cors({
+    origin: 'https://automate-emails-test.webflow.io'
+  }));
+
 // Function to connect to MongoDB
 async function connectToMongoDB() {
   try {
