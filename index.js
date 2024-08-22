@@ -35,6 +35,7 @@ app.get('/getContents', async (req, res) => {
   }
 });
 
+
 // Start the server
 app.listen(port, async () => {
   await connectToMongoDB();
