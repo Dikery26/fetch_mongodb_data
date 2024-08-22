@@ -28,18 +28,31 @@ async function connectToMongoDB() {
   }
 }
 
-// Endpoint to fetch data from a specific collection
 app.get('/getContents', async (req, res) => {
-  try {
-    const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
-    const collection = db.collection(collectionName);
-    const documents = await collection.find({}).toArray();
-    res.json(documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching data' });
-  }
-});
-
+    try {
+      const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
+      const collection = db.collection(collectionName);
+      const documents = await collection.find({}).toArray();
+  
+      // Map through the documents and add an `imageSrc` property for Base64 images
+      const documentsWithImages = documents.map(doc => {
+        if (doc.attachments && doc.attachments.length > 0) {
+          doc.attachments = doc.attachments.map(attachment => {
+            return {
+              ...attachment,
+              imageSrc: `data:${attachment.mimeType};base64,${attachment.data.toString('base64')}`
+            };
+          });
+        }
+        return doc;
+      });
+  
+      res.json(documentsWithImages);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching data' });
+    }
+  });
+  
 
 // Start the server
 app.listen(port, async () => {
