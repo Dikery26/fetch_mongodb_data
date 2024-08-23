@@ -31,35 +31,39 @@ async function connectToMongoDB() {
 
 // API endpoint to get paginated email data
 app.get('/getContents', async (req, res) => {
-  try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-      const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
-      const collection = db.collection(collectionName);
+        const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
+        const collection = db.collection(collectionName);
 
-      const documents = await collection.find({}).skip(skip).limit(limit).toArray();
+        // Sort by date in descending order and paginate
+        const documents = await collection.find({})
+            .sort({ date: -1 }) // Ensure that documents are sorted by date descending
+            .skip(skip)
+            .limit(limit)
+            .toArray();
 
-      // Map through the documents and add an `imageSrc` property for Base64 images
-      const documentsWithImages = documents.map(doc => {
-          if (doc.attachments && doc.attachments.length > 0) {
-              doc.attachments = doc.attachments.map(attachment => {
-                  return {
-                      ...attachment,
-                      imageSrc: `data:${attachment.mimeType};base64,${attachment.data.toString('base64')}`
-                  };
-              });
-          }
-          return doc;
-      });
+        // Map through the documents and add an `imageSrc` property for Base64 images
+        const documentsWithImages = documents.map(doc => {
+            if (doc.attachments && doc.attachments.length > 0) {
+                doc.attachments = doc.attachments.map(attachment => {
+                    return {
+                        ...attachment,
+                        imageSrc: `data:${attachment.mimeType};base64,${attachment.data.toString('base64')}`
+                    };
+                });
+            }
+            return doc;
+        });
 
-      res.json(documentsWithImages);
-  } catch (error) {
-      res.status(500).json({ error: 'Error fetching data' });
-  }
+        res.json(documentsWithImages);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching data' });
+    }
 });
-
 
 // Start the server
 app.listen(port, async () => {
