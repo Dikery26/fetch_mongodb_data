@@ -39,9 +39,12 @@ app.get('/getContents', async (req, res) => {
         const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
         const collection = db.collection(collectionName);
 
-        // Sort by date in descending order and paginate
+        // Fetch the total count of documents
+        const totalDocuments = await collection.countDocuments();
+        
+        // Fetch the sorted and paginated documents
         const documents = await collection.find({})
-            .sort({ date: -1 }) // Ensure that documents are sorted by date descending
+            .sort({ receivedDate: -1 }) // Sort by receivedDate in descending order
             .skip(skip)
             .limit(limit)
             .toArray();
@@ -59,7 +62,10 @@ app.get('/getContents', async (req, res) => {
             return doc;
         });
 
-        res.json(documentsWithImages);
+        res.json({
+            totalDocuments, // Include the total number of documents
+            documents: documentsWithImages // The paginated, sorted documents
+        });
     } catch (error) {
         res.status(500).json({ error: 'Error fetching data' });
     }
