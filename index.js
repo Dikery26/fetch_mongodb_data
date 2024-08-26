@@ -63,7 +63,7 @@ app.get('/getContents/All-in-One_Alerts', async (req, res) => {
 app.get('/getContents/Crypto_Alerts', async (req, res) => {
   try {
       const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 20;
+      const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
       const collectionName = 'Crypto_Alerts'; // Replace with your collection name
