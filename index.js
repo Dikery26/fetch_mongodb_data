@@ -36,10 +36,14 @@ app.get('/getContents/All-in-One_Alerts', async (req, res) => {
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const collectionName = 'All-in-One_Alerts'; // Replace with your collection name
+      const collectionName = 'All-in-One_Alerts';
       const collection = db.collection(collectionName);
 
-      const documents = await collection.find({}).skip(skip).limit(limit).toArray();
+      const documents = await collection.find({})
+          .sort({ receiveTime: -1 }) // Sort by receiveTime in descending order
+          .skip(skip)
+          .limit(limit)
+          .toArray();
 
       // Map through the documents and add an `imageSrc` property for Base64 images
       const documentsWithImages = documents.map(doc => {
@@ -66,10 +70,14 @@ app.get('/getContents/Crypto_Alerts', async (req, res) => {
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const collectionName = 'Crypto_Alerts'; // Replace with your collection name
+      const collectionName = 'Crypto_Alerts';
       const collection = db.collection(collectionName);
 
-      const documents = await collection.find({}).skip(skip).limit(limit).toArray();
+      const documents = await collection.find({})
+          .sort({ receiveTime: -1 }) // Sort by receiveTime in descending order
+          .skip(skip)
+          .limit(limit)
+          .toArray();
 
       // Map through the documents and add an `imageSrc` property for Base64 images
       const documentsWithImages = documents.map(doc => {
